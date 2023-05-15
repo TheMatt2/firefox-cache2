@@ -93,8 +93,14 @@ def main(args = None):
                 print(f"last_modified               : {entry.metadata_header.last_modified}")
                 # print(f"frecency                    : {entry.metadata_header.frecency}")
                 print(f"expire_time                 : {entry.metadata_header.expire_time}")
-                # print(f"key_size                    : {entry.metadata_header.key_size}")
+                print(f"key_size                    : {entry.metadata_header.key_size}")
                 print(f"flags                       : {entry.metadata_header.flags}")
+                print(f"data_size                   : {len(entry.data)}")
+
+            if not args.details and not args.extract:
+                # If not showing details or extracting, just list a single line about
+                # each entry
+                print(f"Entry {entry.filename} of file {filename}")
 
             if not args.extract:
                 continue
@@ -103,7 +109,7 @@ def main(args = None):
             filename = args.extract / filename
 
             if args.verbose:
-                print(f"Extracting {entry.filename!r} to {str(filename)!r}")
+                print(f"Extracting {entry.filename!r} to {filename.resolve()!r}")
 
             if args.dryrun:
                 continue
