@@ -109,10 +109,10 @@ def main(args = None):
             filename = args.extract / filename
 
             if args.verbose:
-                print(f"Extracting {entry.filename!r} to {filename.resolve()!r}")
-
-            if args.dryrun:
-                continue
+                if args.dryrun:
+                    print(f"Would extract {entry.filename!r} to {str(filename.absolute())!r}")
+                else:
+                    print(f"Extracting {entry.filename!r} to {str(filename.absolute())!r}")
 
             # Create the directory if it doesn't exist
             filename.parent.mkdir(exist_ok = True)
