@@ -281,7 +281,7 @@ class EntryFile:
             self.parse_elements(element_buf, element_buf_size)
 
         hash_buf_size = meta_pos_offset - hashes_offset
-        hash_buf = metadata_buf[hashes_offset:hashes_offset+hash_buf_size]
+        hash_buf = metadata_buf[hashes_offset:hashes_offset + hash_buf_size]
         self.hash_expected, = struct.unpack('>I', metadata_buf[:4])
         hash_buf = metadata_buf[hashes_offset:hashes_offset+hashes_len]
         self.parse_hashes(hash_buf, hash_count)
