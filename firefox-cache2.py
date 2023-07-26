@@ -1,7 +1,8 @@
+import re
 import argparse
 from pathlib import Path
 from fnmatch import fnmatch
-from urllib.parse import urlsplit, unquote
+from urllib.parse import urlsplit
 from posixpath import basename as url_basename
 
 from entry_file import EntryFile, EntryParseError
@@ -15,7 +16,7 @@ def parse_entries(cache_path):
     else:
         entry_files = [cache_path]
 
-    for file in entry_files:
+    for file in sorted(entry_files):
         if file.is_file():
             entry_file = EntryFile()
             try:
@@ -25,7 +26,7 @@ def parse_entries(cache_path):
             else:
                 yield entry_file
 
-# Partyly based on https://gist.github.com/zed/c2168b9c52b032b5fb7d
+# Partly based on https://gist.github.com/zed/c2168b9c52b032b5fb7d
 def entry_to_filename(entry):
     # heurstically determine the best filename of the entry
     url = entry.key_tags.cacheKey
@@ -56,7 +57,8 @@ def main(args = None):
     if args.dryrun and not args.extract:
         parser.error("--dryrun specified, but no directory provided to extract to")
 
-    for cache_path in args.cache_path:
+    # For deduplication purposes, sort path before using
+    for cache_path in sorted(args.cache_path):
         for entry in parse_entries(cache_path):
             filename = entry_to_filename(entry)
 
@@ -107,6 +109,20 @@ def main(args = None):
 
             # Print where the file would be saved to
             filename = args.extract / filename
+
+            # if file exists, figure out a new name
+            while filename.exists():
+                match = re.match("(.+)_([1-9][0-9]*)$", filename.stem)
+
+                if match:
+                    # If already counter
+                    i = int(match.group(2))
+                    base = match.group(1)
+
+                    filename = filename.parent / f"{base}_{i + 1:d}{filename.suffix}"
+                else:
+                    # Create new counter
+                    filename = filename.parent / f"{filename.stem}_1{filename.suffix}"
 
             if args.verbose:
                 if args.dryrun:
