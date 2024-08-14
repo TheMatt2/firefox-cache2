@@ -49,11 +49,10 @@ def decompress(data, filename = None):
     decompressor = AltGzipFile(fileobj = f, filename = filename)
     try:
         return decompressor.read()
-    except IOError:
+    except (IOError, EOFError):
         # Error decompressing data
         # Assume not gzip
         return data
-
 
 class EntryParseError(RuntimeError):
     """

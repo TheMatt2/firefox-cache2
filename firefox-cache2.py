@@ -107,6 +107,10 @@ def main(args = None):
             if not args.extract:
                 continue
 
+            # Make sure filename is not too long
+            if len(filename) > 100:
+                filename = filename[:95] + "-"
+
             # Print where the file would be saved to
             filename = args.extract / filename
 
